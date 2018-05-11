@@ -1,0 +1,411 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Configuring the Pipeline &#8212; Psychcore NGS Germline Variant Pipeline  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Running the Pipeline and its Outputs" href="out.html" />
+    <link rel="prev" title="Getting Started" href="getting-started.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="configuring-the-pipeline">
+<span id="sec-conf"></span><h1>Configuring the Pipeline<a class="headerlink" href="#configuring-the-pipeline" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="your-pipeline-run">
+<span id="runyaml"></span><h2>Your Pipeline Run<a class="headerlink" href="#your-pipeline-run" title="Permalink to this headline">¶</a></h2>
+<p>Before running the pipeline, some information must be provided to the pipeline.
+In the current build of the pipeline, you, the user, will have to modify the
+&lt;run.yaml&gt; file located in the root of the project.  It looks something like
+the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nn">---</span>
+<span class="l l-Scalar l-Scalar-Plain">STACK_NAME</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">RESOURCE_CFN_TMPL_DEPLOY_BUCKET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">GCP_CREDS_FILE</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">CLOUD_TRANSFER_OUTBUCKET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">PROJECT_ID</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">ZONE</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">GPCE_SSH_KEY_PAIR</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">INPUT</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">OUTPUT</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">REF_BUCKET_URI</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">SAMPLES</span> <span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;&quot;</span>
+  <span class="p p-Indicator">-</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">COHORT_PREFIX</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">BUILD</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">OME</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">MODE</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">TARGET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">TARGET_FILE_LOCAL_PATH</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">TARGET_FILE_S3_KEY_PREFIX</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">TARGET_FILE_S3_BUCKET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">SENTIEON_PACKAGE_PATH</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">SENTIEON_PACKAGE_NAME</span><span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">SENTIEON_LICENSE_PATH</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">SENTIEON_BUCKET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">SENTIEON_PREFIX</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">PARAM_FILE</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">PARAM_PATH</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">PARAM_BUCKET</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">PARAM_PREFIX</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+
+<span class="l l-Scalar l-Scalar-Plain">POLL_TIME</span> <span class="p p-Indicator">:</span> <span class="s">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Each field must have a value for the pipeline to run.  Listed below are
+descriptions for each of the fields.  For more information about the yaml
+file format, see the <a class="reference external" href="http://yaml.org">official yaml website</a>.</p>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt><em>STACK_NAME</em></dt>
+<dd><ul class="first last">
+<li>The name of the AWS Cloudformation stack associated with the pipeline run.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>RESOURCE_CFN_TMPL_DEPLOY_BUCKET</em></dt>
+<dd><ul class="first last">
+<li>The AWS S3 bucket where the AWS Lambda functions and other resources will be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>GCP_CREDS_FILE</em></dt>
+<dd><ul class="first last">
+<li>The full path to the credentials file for GCP for the validation step of the pipeline.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>CLOUD_TRANSFER_OUTBUCKET</em></dt>
+<dd><ul class="first last">
+<li>The GCS Bucket to upload the final VCF from AWS S3.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>GCP_CREDS_FILE</em></dt>
+<dd><ul class="first last">
+<li>The absolute path to the local copy of the user’s GCP credentials json file.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>CLUSTER_NAME</em></dt>
+<dd><ul class="first last">
+<li>The name of the Dataproc cluster.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>CLOUD_TRANSFER_OUTBUCKET</em></dt>
+<dd><ul class="first last">
+<li>The GCS URI where the final VQSR’d VCF from AWS will be uploaded to for post processing.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>PROJECT_ID</em></dt>
+<dd><ul class="first last">
+<li>The ID for a google cloud (billable) project.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>ZONE</em></dt>
+<dd><ul class="first last">
+<li>The availability zone on GCP where results should be stored.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>GCPE_SSH_KEY_PAIR</em></dt>
+<dd><ul class="first last">
+<li>The AWS EC2 Key Pair to associate with the Batch Compute Environment.</li>
+<li>With this the user will be able to SSH into any instance in the cluster.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>INPUT</em></dt>
+<dd><ul class="first last">
+<li>The AWS S3 URI where the fastq for all SAMPLES are locate.</li>
+<li>(eg. s3://analysis/fastqs/)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>OUTPUT</em></dt>
+<dd><ul class="first last">
+<li>The AWS S3 URI where the output should be uploaded.</li>
+<li>(eg. s3://analysis/results/)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>REF_BUCKET_URI</em></dt>
+<dd><ul class="first last">
+<li>The AWS S3 URI where the reference files are located (see <a class="reference internal" href="getting-started.html#refs"><span class="std std-ref">Creating a Google Cloud Platform (GCP) Account</span></a>).</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SAMPLES</em></dt>
+<dd><ul class="first last">
+<li>A yaml list of the sample names that are present in INPUT.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>COHORT_PREFIX</em></dt>
+<dd><ul class="first last">
+<li>The name given to the vcf produced at the joint genotyping step</li>
+<li>(eg family5 will produce family5.gt.vcf).</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>BUILD</em></dt>
+<dd><ul class="first last">
+<li>The build of the human reference to be used; either GRCh37 or GRCh38.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>OME</em></dt>
+<dd><ul class="first last">
+<li>Either wgs or wes; dictates whether the pipeline should run whole genome or targeted/exome analysis.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>MODE</em></dt>
+<dd><ul class="first last">
+<li>Set to prod, unless in development, then use test.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>TARGET</em></dt>
+<dd><ul class="first last">
+<li>The BED file which describes the intervals to be used if OME is set to wes.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>TARGET_FILE_LOCAL_PATH</em></dt>
+<dd><ul class="first last">
+<li>The relative path to TARGET from the root of the project directory.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>TARGET_FILE_S3_KEY_PREFIX</em></dt>
+<dd><ul class="first last">
+<li>The S3 prefix for where TARGET should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>TARGET_FILE_S3_BUCKET</em></dt>
+<dd><ul class="first last">
+<li>The S3 bucket for where TARGET should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_PACKAGE_NAME</em></dt>
+<dd><ul class="first last">
+<li>The name of the tar.gz Sentieon software package.</li>
+<li>(eg. sentieon-genomics-201711.01.tar.gz)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_PACKAGE_PATH</em></dt>
+<dd><ul class="first last">
+<li>The relative path to SENTIEON_PACKAGE_NAME from the root of the project directory.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_LICENSE_NAME</em></dt>
+<dd><ul class="first last">
+<li>The name of the Sentieon license file.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_LICENSE_PATH</em></dt>
+<dd><ul class="first last">
+<li>The relative path to SENTIEON_LICENSE from the root of the project directory.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_BUCKET</em></dt>
+<dd><ul class="first last">
+<li>The S3 bucket for where the Sentieon software package and license should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>SENTIEON_PREFIX</em></dt>
+<dd><ul class="first last">
+<li>The S3 prefix for where the Sentieon software package and license should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>PARAM_BUCKET</em></dt>
+<dd><ul class="first last">
+<li>The S3 bucket for where the tool_parameter yaml file should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>PARAM_PREFIX</em></dt>
+<dd><ul class="first last">
+<li>The S3 prefix for where the tool_parameter yaml file should be uploaded.</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><em>POLL_TIME</em></dt>
+<dd><ul class="first last">
+<li>The number of seconds the Step Functions state machine should wait before polling for completed jobs (see <a class="reference internal" href="overview.html#infrastructure"><span class="std std-ref">Pipeline Infrastructure</span></a>)</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>Once run.yaml has been properly filled out, the pipeline is ready to be run. Please see <a class="reference internal" href="out.html#run"><span class="std std-ref">Starting a Run</span></a> to continue.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuring the Pipeline</a><ul>
+<li><a class="reference internal" href="#your-pipeline-run">Your Pipeline Run</a></li>
+<li><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="getting-started.html" title="previous chapter">Getting Started</a></li>
+      <li>Next: <a href="out.html" title="next chapter">Running the Pipeline and its Outputs</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/conf.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Michael Gilson, Claudia Dastmalchi, Lindsay Liang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/conf.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
