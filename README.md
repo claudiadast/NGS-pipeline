@@ -11,11 +11,13 @@ can be found on readthedocs here: http://ngs-pipeline.readthedocs.io/en/latest/i
 
 # Getting Started
 
-Before running the pipeline, you'll need the following:
+Before running the pipeline, you'll to have done the following:
 
-  - An AWS account
-  - A Sentieon License
-  - A python 3.6 envrionment configured with our project dependencies (we recommend Conda!)
+  - [Create an AWS account](#Creating-and-Setting-up-your-Amazon-Web-Services-(AWS)-Account)
+  - [Put reference data in AWS S3 storage](#Download-and-Upload-Reference-Files-to-S3)
+  - [Obtain a Sentieon License](#Obtain-a-Sentieon-License-File)
+  - [Create a python 3.6 envrionment configured with our project dependencies (we recommend Conda!)](#Install-Conda-and-your-Dev-Environment)
+  - [(Optionally) Create Google Cloud Platform account](#Install-Conda-and-your-Dev-Environment)
 
 If you need to set up any of the above, please see the docs; once you 
 have these in place, you can execute the command at the bottom to run
@@ -38,15 +40,9 @@ In addition to an **SSH KeyPair**, you will need to set up cloud storage locatio
 In AWS, this storage service is called **S3**. In this service, data is held in containers, called buckets, you will need at least one.
 Additional details on creating buckets can be [found here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html).
 
-## Creating a Google Cloud Platform (GCP) Account (Optional)
-
-Note that this is only required for running the Validation pipeline (see [GCP documentation](https://cloud.google.com))
-
 ## Download and Upload Reference Files to S3
 
-The pipeline performs many operations which require several reference
-files. (Eg. the human reference genome fasta and its indexes). These
-must be uploaded to AWS S3 before the pipeline can be run. The standard
+The pipeline performs many operations which require several reference files. (Eg. the human reference genome fasta and its indexes). These must be uploaded to AWS S3 before the pipeline can be run. The standard
 reference files are provided by the Broad Institute's [GATK Resource
 Bundle](https://software.broadinstitute.org/gatk/download/bundle). Currently, the pipeline supports two builds of the human
 reference genome - [GRCh37](https://software.broadinstitute.org/gatk/download/bundle) (hg19) and [GRCh38](https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0) (hg38). GRCh37 files
@@ -100,3 +96,8 @@ By default, the pipeline makes use of the following instance types:
 
 The pricing specification for each of the AWS EC2 instance types can be
 found on the [AWS Instance Pricing page](https://aws.amazon.com/ec2/pricing/on-demand/).
+
+
+## Creating a Google Cloud Platform (GCP) Account (Optional)
+
+Note that this is only required for running the Validation pipeline (see [GCP documentation](https://cloud.google.com))
