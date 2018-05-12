@@ -1,0 +1,47 @@
+---
+#
+# Essential parameters
+#
+STACK_NAME : my-pipeline-run
+RESOURCE_CFN_TMPL_DEPLOY_BUCKET : #Bucket name (e.g. pipeline-run)
+
+GPCE_SSH_KEY_PAIR : #Account-specific key pair for using AWS EC2 (e.g. John_Key)
+
+INPUT : #S3 location of your fastq files (e.g. s3://pipeline-run/fastqs/)
+OUTPUT : #S3 location of all resulting files (e.g. s3://pipeline-run/results/
+REF_BUCKET_URI : #S3 location of reference genome files (e.g. s3://GRCh38-references/)
+SAMPLES :
+  # List of sample names (prefix to .fastq.gz)
+  # - sample1 (sample1_R1.fastq.gz | sample1_R2.fastq.gz)
+  # - sample2
+
+COHORT_PREFIX : #prefix for your resulting VCF (e.g. cohort1)
+
+BUILD : #Build of the reference genome (GRCh38 | GRCh37)
+OME : #Choice between whole exome or whole genome (wgs | wes)
+MODE : #Choice between running in test or production mode (test | prod)
+
+TARGET : #Interval BED file if ome is "wes" (e.g. Exome-NGv3.bed)
+TARGET_FILE_LOCAL_PATH : #Relative path to your interval BED file directory (e.g. assets/intervals)
+TARGET_FILE_S3_KEY_PREFIX : #S3 prefix for your target file (e.g. if "s3://pipeline-run/target/" your prefix is "target/")
+TARGET_FILE_S3_BUCKET : #S3 bucket name for your target file (e.g. pipeline-run)
+
+SENTIEON_BUCKET : #S3 bucket to upload sentieon license and software (e.g. wgs-pipeline-param)
+SENTIEON_PREFIX : #S3 prefix to upload sentieon license and software
+SENTIEON_PACKAGE_PATH : #Relative path to your Sentieon tar.gz file (e.g. assets/ )
+SENTIEON_PACKAGE_NAME: #The Sentieon software file (e.g. sentieon-genomics-201711.01.tar.gz)
+SENTIEON_LICENSE_PATH : #Relative path to your Sentieon license file (e.g. assets/license/)
+SENTIEON_LICENSE_NAME : #Name of the Sentieon license file (e.g mylicense.lic)
+
+PARAM_BUCKET : #S3 bucket name for the parameter templates to be uploaded (e.g. wgs-pipeline-param-jsons)
+PARAM_PREFIX : #S3 prefix for the parameters templates to be uploaded
+
+POLL_TIME : #How often the Lambda pollers check for job status in seconds (e.g. 30)
+
+#
+# Validation-related parameters
+#
+GCP_CREDS_FILE : #Absolute path to your Google Cloud service account json (e.g. /Users/Keys/service_creds.json)
+CLOUD_TRANSFER_OUTBUCKET : #The Google Cloud bucket to which VCF will be transferred (e.g. gs://pipeline-run)
+PROJECT_ID : #ID for your Google Cloud Project (e.g. GCP assigns names like "summer-water-178325")
+ZONE: #The zone in which you want your data to be stored on Google Cloud (e.g. us-east4-b)

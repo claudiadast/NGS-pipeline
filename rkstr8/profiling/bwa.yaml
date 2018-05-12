@@ -1,0 +1,19 @@
+in-bucket-uri: 's3://pipeline-validation/test/scatter-gather/'
+buffer-vcf-uri: 's3://test-references/truncated-buffer-vcfs/'
+container: lindsayliang/haplotype_genotype
+out-bucket-uri: 's3://pipeline-validation/profiling-output/short/'
+time-info-uri: 's3://pipeline-validation/time-info/short/'
+trials:
+  -
+    job_def: haplotype-genotype-short
+    prefix: D680TT
+    ami: ami-70c2980a
+    instance_types:
+      - c5.9xlarge
+    vcpu_specs:
+      - 0
+      - 0
+      - 360
+    job_specs:
+      vcpus: 2
+      mem: 4000

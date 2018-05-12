@@ -1,0 +1,466 @@
+{AWSTemplateFormatVersion: '2010-09-09', Description: Template for wgs-pipeline, Parameters: {
+    ActivityAndHandoffAnsibleBucketName: {Type: String}, ActivityAndHandoffAnsibleKeyName: {
+      Type: String}, ActivityAndHandoffDaemonBucketName: {Type: String}, ActivityAndHandoffDaemonKeyName: {
+      Type: String}, ActivityAndHandoffDaemonRequirementsBucketName: {Type: String},
+    ActivityAndHandoffDaemonRequirementsKeyName: {Type: String}, AlignmentLambdaFuncModuleName: {
+      Type: String}, AlignmentLambdaFuncS3BucketName: {Type: String}, AlignmentLambdaFuncS3KeyName: {
+      Type: String}, AlignmentPollerLambdaFuncModuleName: {Type: String}, AlignmentPollerLambdaFuncS3BucketName: {
+      Type: String}, AlignmentPollerLambdaFuncS3KeyName: {Type: String}, CloudspanLambdaFuncModuleName: {
+      Default: cloudspan, Type: String}, CloudspanLambdaFuncS3BucketName: {Type: String},
+    CloudspanLambdaFuncS3KeyName: {Default: sfn.deployable.zip, Type: String}, GPCEAmi: {
+      Default: ami-fab58280, Type: String}, GPCEDesiredVcpus: {Default: 0, Description: 'Desired
+        number of VCPUs for entire cluster, there are caveats to this', Type: Number},
+    GPCEInstanceTypes: {Default: 'c5.9xlarge, r4.4xlarge, c5.18xlarge', Type: CommaDelimitedList},
+    GPCEMaxVcpus: {Default: 288, Description: 'Max number of VCPUs for entire cluster,
+        there are caveats to this', Type: Number}, GPCEMinVcpus: {Default: 0, Description: 'Min
+        number of VCPUs for entire cluster, there are caveats to this', Type: Number},
+    GPCEName: {Default: GeneralPurposeVariantCallingCE, Type: String}, GPCESSHKeyPair: {
+      Type: String}, GPCESubnetAZ1: {Default: us-east-1a, Type: String}, GPCEVpcId: {
+      Type: String}, GenoLambdaFuncModuleName: {Type: String}, GenoLambdaFuncS3BucketName: {
+      Type: String}, GenoLambdaFuncS3KeyName: {Type: String}, HandoffLambdaFuncModuleName: {
+      Type: String}, HandoffLambdaFuncS3BucketName: {Type: String}, HandoffLambdaFuncS3KeyName: {
+      Type: String}, HaploLambdaFuncModuleName: {Type: String}, HaploLambdaFuncS3BucketName: {
+      Type: String}, HaploLambdaFuncS3KeyName: {Type: String}, KMSAdminUserARN: {
+      Type: String}, KMSEndUserARN: {Type: String}, Rkstr8PkgBucketName: {Type: String},
+    Rkstr8PkgKeyName: {Type: String}, StackUID: {Default: '1234', Type: String}, TriodenovoLambdaFuncModuleName: {
+      Type: String}, TriodenovoLambdaFuncS3BucketName: {Type: String}, TriodenovoLambdaFuncS3KeyName: {
+      Type: String}, VQSRLambdaFuncModuleName: {Type: String}, VQSRLambdaFuncS3BucketName: {
+      Type: String}, VQSRLambdaFuncS3KeyName: {Type: String}}, Resources: {AlignmentLambdaExecutionRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['s3:GetBucketLocation',
+                    's3:ListAllMyBuckets'], Effect: Allow, Resource: 'arn:aws:s3:::*'}],
+              Version: '2012-10-17'}, PolicyName: CanListBuckets}, {PolicyDocument: {
+              Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}], Version: '2012-10-17'},
+            PolicyName: CanCallBatch}, {PolicyDocument: {Statement: [{Action: ['logs:*'],
+                  Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}], Version: '2012-10-17'},
+            PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'}, AlignmentLambdaFunction: {
+      Properties: {Code: {S3Bucket: {Ref: AlignmentLambdaFuncS3BucketName}, S3Key: {
+            Ref: AlignmentLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [., [{Ref: AlignmentLambdaFuncModuleName},
+              handler]]}, Role: {'Fn::GetAtt': [AlignmentLambdaExecutionRole, Arn]},
+        Runtime: python3.6, Timeout: '60'}, Type: 'AWS::Lambda::Function'}, AlignmentPollerLambdaExecutionRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['batch:*'], Effect: Allow,
+                  Resource: '*'}], Version: '2012-10-17'}, PolicyName: CanCallBatch},
+          {PolicyDocument: {Statement: [{Action: ['logs:*'], Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}],
+              Version: '2012-10-17'}, PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'},
+    AlignmentPollerLambdaFunction: {Properties: {Code: {S3Bucket: {Ref: AlignmentPollerLambdaFuncS3BucketName},
+          S3Key: {Ref: AlignmentPollerLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [
+            ., [{Ref: AlignmentPollerLambdaFuncModuleName}, handler]]}, Role: {'Fn::GetAtt': [
+            AlignmentPollerLambdaExecutionRole, Arn]}, Runtime: python3.6, Timeout: '60'},
+      Type: 'AWS::Lambda::Function'}, BatchGatherActivity: {Properties: {Name: {'Fn::Join': [
+            '-', [BatchGatherActivity, {Ref: StackUID}]]}}, Type: 'AWS::StepFunctions::Activity'},
+    BatchScatterGatherPollingActivity: {Properties: {Name: {'Fn::Join': ['-', [BatchScatterGatherPollingActivity,
+              {Ref: StackUID}]]}}, Type: 'AWS::StepFunctions::Activity'}, BatchScatterGatherSubmissionActivity: {
+      Properties: {Name: {'Fn::Join': ['-', [BatchScatterGatherSubmissionActivity,
+              {Ref: StackUID}]]}}, Type: 'AWS::StepFunctions::Activity'}, BatchServiceRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: batch.amazonaws.com}}], Version: '2012-10-17'},
+        ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole']},
+      Type: 'AWS::IAM::Role'}, CloudspanLambdaExecutionRole: {Properties: {AssumeRolePolicyDocument: {
+          Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: lambda.amazonaws.com}}],
+          Version: '2012-10-17'}, Policies: [{PolicyDocument: {Statement: [{Action: [
+                    's3:GetBucketLocation', 's3:ListAllMyBuckets'], Effect: Allow,
+                  Resource: 'arn:aws:s3:::*'}], Version: '2012-10-17'}, PolicyName: CanListBuckets},
+          {PolicyDocument: {Statement: [{Action: ['logs:*'], Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}],
+              Version: '2012-10-17'}, PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'},
+    CloudspanLambdaFunction: {Properties: {Code: {S3Bucket: {Ref: CloudspanLambdaFuncS3BucketName},
+          S3Key: {Ref: CloudspanLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [., [
+              {Ref: CloudspanLambdaFuncModuleName}, handler]]}, Role: {'Fn::GetAtt': [
+            CloudspanLambdaExecutionRole, Arn]}, Runtime: python3.6, Timeout: '60'},
+      Type: 'AWS::Lambda::Function'}, EcsInstanceRole: {Properties: {AssumeRolePolicyDocument: {
+          Statement: [{Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: ec2.amazonaws.com},
+              Sid: ''}], Version: '2008-10-17'}, ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role']},
+      Type: 'AWS::IAM::Role'}, GeneralPurposeComputeEnvironment: {DependsOn: [SecurityGroup,
+        Subnet, IamInstanceProfile, BatchServiceRole], Properties: {ComputeEnvironmentName: {
+          'Fn::Join': ['-', [{Ref: GPCEName}, {Ref: StackUID}]]}, ComputeResources: {
+          DesiredvCpus: {Ref: GPCEDesiredVcpus}, Ec2KeyPair: {Ref: GPCESSHKeyPair},
+          ImageId: {Ref: GPCEAmi}, InstanceRole: {Ref: IamInstanceProfile}, InstanceTypes: {
+            Ref: GPCEInstanceTypes}, MaxvCpus: {Ref: GPCEMaxVcpus}, MinvCpus: {Ref: GPCEMinVcpus},
+          SecurityGroupIds: [{Ref: SecurityGroup}], Subnets: [{Ref: Subnet}], Tags: {
+            Key: Name, Value: VariantCallingBatchComputeEnvironment}, Type: EC2},
+        ServiceRole: {Ref: BatchServiceRole}, State: ENABLED, Type: MANAGED}, Type: 'AWS::Batch::ComputeEnvironment'},
+    GeneralPurposeContainerRole: {Properties: {AssumeRolePolicyDocument: {Statement: [
+            {Action: ['sts:AssumeRole'], Effect: Allow, Principal: {Service: [ecs-tasks.amazonaws.com]}}],
+          Version: '2012-10-17'}, Path: /, Policies: [{PolicyDocument: {Statement: [
+                {Action: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject', 's3:List*'],
+                  Effect: Allow, Resource: ['arn:aws:s3:::pipeline-validation/*',
+                    'arn:aws:s3:::wgs-pipeline-vqsr-test/*', 'arn:aws:s3:::test-references/*',
+                    'arn:aws:s3:::psychcore-pipelines/output/*', 'arn:aws:s3:::psychcore-pipelines/validation/samples/*',
+                    'arn:aws:s3:::psychcore-data/reference_indexs/*', 'arn:aws:s3:::psychcore-pipelines',
+                    'arn:aws:s3:::psychcore-pipelines', 'arn:aws:s3:::psychcore-data',
+                    'arn:aws:s3:::*']}, {Action: ['s3:List*', 's3:ListMultipartUploadParts',
+                    's3:AbortMultipartUpload', 's3:ListBucketMultipartUploads'], Effect: Allow,
+                  Resource: ['arn:aws:s3:::pipeline-validation', 'arn:aws:s3:::wgs-pipeline-vqsr-test',
+                    'arn:aws:s3:::test-references', 'arn:aws:s3:::psychcore-pipelines/output/',
+                    'arn:aws:s3:::psychcore-pipelines/validation/samples/', 'arn:aws:s3:::psychcore-data/reference_indexs/',
+                    'arn:aws:s3:::psychcore-pipelines', 'arn:aws:s3:::psychcore-pipelines',
+                    'arn:aws:s3:::psychcore-data', 'arn:aws:s3:::*']}]}, PolicyName: ContainerS3Access}]},
+      Type: 'AWS::IAM::Role'}, GeneralPurposeQueue: {DependsOn: [GeneralPurposeComputeEnvironment,
+        BatchServiceRole], Properties: {ComputeEnvironmentOrder: [{ComputeEnvironment: {
+              Ref: GeneralPurposeComputeEnvironment}, Order: 1}], JobQueueName: {
+          'Fn::Join': ['-', [GeneralPurposeQueue, {Ref: StackUID}]]}, Priority: 1,
+        State: ENABLED}, Type: 'AWS::Batch::JobQueue'}, GenoLambdaExecutionRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['s3:GetBucketLocation',
+                    's3:ListAllMyBuckets'], Effect: Allow, Resource: 'arn:aws:s3:::*'}],
+              Version: '2012-10-17'}, PolicyName: CanListBuckets}, {PolicyDocument: {
+              Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}], Version: '2012-10-17'},
+            PolicyName: CanCallBatch}, {PolicyDocument: {Statement: [{Action: ['logs:*'],
+                  Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}], Version: '2012-10-17'},
+            PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'}, GenoLambdaFunction: {
+      DependsOn: GenoLambdaExecutionRole, Properties: {Code: {S3Bucket: {Ref: GenoLambdaFuncS3BucketName},
+          S3Key: {Ref: GenoLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [., [{Ref: GenoLambdaFuncModuleName},
+              handler]]}, Role: {'Fn::GetAtt': [GenoLambdaExecutionRole, Arn]}, Runtime: python3.6,
+        Timeout: '60'}, Type: 'AWS::Lambda::Function'}, HandoffLambdaExecutionRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['ssm:*'], Effect: Allow,
+                  Resource: '*'}, {Action: ['ec2messages:*'], Effect: Allow, Resource: '*'},
+                {Action: ['cloudwatch:PutMetricData'], Effect: Allow, Resource: '*'},
+                {Action: ['ec2:Describe*'], Effect: Allow, Resource: '*'}, {Action: [
+                    'ds:CreateComputer', 'ds:DescribeDirectories'], Effect: Allow,
+                  Resource: '*'}, {Action: ['logs:*'], Effect: Allow, Resource: '*'},
+                {Action: ['s3:PutObject', 's3:GetObject', 's3:AbortMultipartUpload',
+                    's3:ListMultipartUploadParts', 's3:ListBucket', 's3:ListAllMyBuckets',
+                    's3:ListBucketMultipartUploads', 's3:GetBucketLocation'], Effect: Allow,
+                  Resource: '*'}], Version: '2012-10-17'}, PolicyName: RunSSMForEC2}]},
+      Type: 'AWS::IAM::Role'}, HandoffLambdaFunction: {Properties: {Code: {S3Bucket: {
+            Ref: HandoffLambdaFuncS3BucketName}, S3Key: {Ref: HandoffLambdaFuncS3KeyName}},
+        Handler: {'Fn::Join': [., [{Ref: HandoffLambdaFuncModuleName}, handler]]},
+        Role: {'Fn::GetAtt': [HandoffLambdaExecutionRole, Arn]}, Runtime: python3.6,
+        Timeout: '300'}, Type: 'AWS::Lambda::Function'}, HaploLambdaExecutionRole: {
+      Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['s3:GetBucketLocation',
+                    's3:ListAllMyBuckets'], Effect: Allow, Resource: 'arn:aws:s3:::*'}],
+              Version: '2012-10-17'}, PolicyName: CanListBuckets}, {PolicyDocument: {
+              Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}], Version: '2012-10-17'},
+            PolicyName: CanCallBatch}, {PolicyDocument: {Statement: [{Action: ['logs:*'],
+                  Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}], Version: '2012-10-17'},
+            PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'}, HaploLambdaFunction: {
+      DependsOn: HaploLambdaExecutionRole, Properties: {Code: {S3Bucket: {Ref: HaploLambdaFuncS3BucketName},
+          S3Key: {Ref: HaploLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [., [{Ref: HaploLambdaFuncModuleName},
+              handler]]}, Role: {'Fn::GetAtt': [HaploLambdaExecutionRole, Arn]}, Runtime: python3.6,
+        Timeout: '60'}, Type: 'AWS::Lambda::Function'}, IamInstanceProfile: {Properties: {
+        Roles: [{Ref: EcsInstanceRole}]}, Type: 'AWS::IAM::InstanceProfile'}, InternetGateway: {
+      Type: 'AWS::EC2::InternetGateway'}, MasterGCPStorageKey: {DependsOn: CloudspanLambdaExecutionRole,
+      Properties: {Description: Symmetric Master Key for GCP Storage Credentials off-line
+          encryption/on-line decryption protocol, EnableKeyRotation: true, Enabled: true,
+        KeyPolicy: {Statement: [{Action: ['kms:Decrypt', 'kms:DescribeKey'], Effect: Allow,
+              Principal: {AWS: {'Fn::GetAtt': [CloudspanLambdaExecutionRole, Arn]}},
+              Resource: '*', Sid: Allow Lambda Excution Role access to GCP Storage
+                decryption key}, {Action: ['kms:Create*', 'kms:Describe*', 'kms:Enable*',
+                'kms:List*', 'kms:Put*', 'kms:Update*', 'kms:Revoke*', 'kms:Disable*',
+                'kms:Get*', 'kms:Delete*', 'kms:TagResource', 'kms:UntagResource',
+                'kms:ScheduleKeyDeletion', 'kms:CancelKeyDeletion', 'kms:Encrypt',
+                'kms:Decrypt', 'kms:ReEncrypt', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+              Effect: Allow, Principal: {AWS: {Ref: KMSAdminUserARN}}, Resource: '*',
+              Sid: Allow Administrator to admin the GCP Storage decryption key}, {
+              Action: ['kms:Encrypt', 'kms:ReEncrypt', 'kms:DescribeKey'], Effect: Allow,
+              Principal: {AWS: {Ref: KMSEndUserARN}}, Resource: '*', Sid: Allow End
+                User to encrypt the GCP Storage creds}], Version: '2012-10-17'}},
+      Type: 'AWS::KMS::Key'}, MyStateMachine: {DependsOn: StatesExecutionRole, Properties: {
+        DefinitionString: {'Fn::Sub': ["{\n  \"Comment\": \"An example of the Amazon\
+              \ States Language using a choice state.\",\n  \"StartAt\": \"AlignmentSubmitTask\"\
+              ,\n  \"States\": {\n    \"AlignmentSubmitTask\": {\n      \"Type\":\
+              \ \"Task\",\n      \"Resource\": \"${alignmentSubmitLambdaArn}\",\n\
+              \      \"ResultPath\": \"$.alignment_job_ids\",\n      \"Next\": \"\
+              AlignmentPollerTask\"\n    },\n    \"AlignmentPollerTask\": {\n    \
+              \  \"Type\": \"Task\",\n      \"Resource\": \"${alignmentPollerLambdaArn}\"\
+              ,\n      \"InputPath\": \"$.alignment_job_ids\",\n      \"ResultPath\"\
+              : \"$.alignment_poll_status\",\n      \"Next\": \"Choice-33f4\"\n  \
+              \  },\n    \"AlignmentProcessingFailed\": {\n      \"Type\": \"Fail\"\
+              \n    },\n    \"Wait-33f4\": {\n      \"Type\": \"Wait\",\n      \"\
+              Seconds\": 30,\n      \"Next\": \"AlignmentPollerTask\"\n    },\n  \
+              \  \"Choice-33f4\": {\n      \"Type\": \"Choice\",\n      \"Choices\"\
+              : [\n        {\n          \"Variable\": \"$.alignment_poll_status\"\
+              ,\n          \"StringEquals\": \"FAIL\",\n          \"Next\": \"AlignmentProcessingFailed\"\
+              \n        },\n        {\n          \"Variable\": \"$.alignment_poll_status\"\
+              ,\n          \"StringEquals\": \"SUCCESS\",\n          \"Next\": \"\
+              HaploSubmitTask\"\n        },\n        {\n          \"Variable\": \"\
+              $.alignment_poll_status\",\n          \"StringEquals\": \"IN_PROGRESS\"\
+              ,\n          \"Next\": \"Wait-33f4\"\n        }\n      ],\n      \"\
+              Default\": \"AlignmentProcessingFailed\"\n    },\n    \"HaploSubmitTask\"\
+              : {\n      \"Type\": \"Task\",\n      \"Resource\": \"${haploSubmitLambdaArn}\"\
+              ,\n      \"ResultPath\": \"$.haplo_job_ids\",\n      \"Next\": \"HaploPollerTask\"\
+              \n    },\n    \"HaploPollerTask\": {\n      \"Type\": \"Task\",\n  \
+              \    \"Resource\": \"${haploPollerLambdaArn}\",\n      \"InputPath\"\
+              : \"$.haplo_job_ids\",\n      \"ResultPath\": \"$.haplo_poll_status\"\
+              ,\n      \"Next\": \"Choice-3b47\"\n    },\n    \"HaploProcessingFailed\"\
+              : {\n      \"Type\": \"Fail\"\n    },\n    \"Wait-3b47\": {\n      \"\
+              Type\": \"Wait\",\n      \"Seconds\": 30,\n      \"Next\": \"HaploPollerTask\"\
+              \n    },\n    \"Choice-3b47\": {\n      \"Type\": \"Choice\",\n    \
+              \  \"Choices\": [\n        {\n          \"Variable\": \"$.haplo_poll_status\"\
+              ,\n          \"StringEquals\": \"FAIL\",\n          \"Next\": \"HaploProcessingFailed\"\
+              \n        },\n        {\n          \"Variable\": \"$.haplo_poll_status\"\
+              ,\n          \"StringEquals\": \"SUCCESS\",\n          \"Next\": \"\
+              GenoSubmitTask\"\n        },\n        {\n          \"Variable\": \"\
+              $.haplo_poll_status\",\n          \"StringEquals\": \"IN_PROGRESS\"\
+              ,\n          \"Next\": \"Wait-3b47\"\n        }\n      ],\n      \"\
+              Default\": \"HaploProcessingFailed\"\n    },\n    \"GenoSubmitTask\"\
+              : {\n      \"Type\": \"Task\",\n      \"Resource\": \"${genoSubmitLambdaArn}\"\
+              ,\n      \"ResultPath\": \"$.geno_job_ids\",\n      \"Next\": \"GenoPollerTask\"\
+              \n    },\n    \"GenoPollerTask\": {\n      \"Type\": \"Task\",\n   \
+              \   \"Resource\": \"${genoPollerLambdaArn}\",\n      \"InputPath\":\
+              \ \"$.geno_job_ids\",\n      \"ResultPath\": \"$.geno_poll_status\"\
+              ,\n      \"Next\": \"Choice-f8c5\"\n    },\n    \"GenoProcessingFailed\"\
+              : {\n      \"Type\": \"Fail\"\n    },\n    \"Wait-f8c5\": {\n      \"\
+              Type\": \"Wait\",\n      \"Seconds\": 30,\n      \"Next\": \"GenoPollerTask\"\
+              \n    },\n    \"Choice-f8c5\": {\n      \"Type\": \"Choice\",\n    \
+              \  \"Choices\": [\n        {\n          \"Variable\": \"$.geno_poll_status\"\
+              ,\n          \"StringEquals\": \"FAIL\",\n          \"Next\": \"GenoProcessingFailed\"\
+              \n        },\n        {\n          \"Variable\": \"$.geno_poll_status\"\
+              ,\n          \"StringEquals\": \"SUCCESS\",\n          \"Next\": \"\
+              VQSRSubmitTask\"\n        },\n        {\n          \"Variable\": \"\
+              $.geno_poll_status\",\n          \"StringEquals\": \"IN_PROGRESS\",\n\
+              \          \"Next\": \"Wait-f8c5\"\n        }\n      ],\n      \"Default\"\
+              : \"GenoProcessingFailed\"\n    },\n    \"VQSRSubmitTask\": {\n    \
+              \  \"Type\": \"Task\",\n      \"Resource\": \"${vqsrSubmitLambdaArn}\"\
+              ,\n      \"ResultPath\": \"$.vqsr_job_ids\",\n      \"Next\": \"VQSRPollerTask\"\
+              \n    },\n    \"VQSRPollerTask\": {\n      \"Type\": \"Task\",\n   \
+              \   \"Resource\": \"${vqsrPollerLambdaArn}\",\n      \"InputPath\":\
+              \ \"$.vqsr_job_ids\",\n      \"ResultPath\": \"$.vqsr_poll_status\"\
+              ,\n      \"Next\": \"Choice-51da\"\n    },\n    \"VQSRProcessingFailed\"\
+              : {\n      \"Type\": \"Fail\"\n    },\n    \"Wait-51da\": {\n      \"\
+              Type\": \"Wait\",\n      \"Seconds\": 30,\n      \"Next\": \"VQSRPollerTask\"\
+              \n    },\n    \"Choice-51da\": {\n      \"Type\": \"Choice\",\n    \
+              \  \"Choices\": [\n        {\n          \"Variable\": \"$.vqsr_poll_status\"\
+              ,\n          \"StringEquals\": \"FAIL\",\n          \"Next\": \"VQSRProcessingFailed\"\
+              \n        },\n        {\n          \"Variable\": \"$.vqsr_poll_status\"\
+              ,\n          \"StringEquals\": \"SUCCESS\",\n          \"Next\": \"\
+              PipelineSucceeded\"\n        },\n        {\n          \"Variable\":\
+              \ \"$.vqsr_poll_status\",\n          \"StringEquals\": \"IN_PROGRESS\"\
+              ,\n          \"Next\": \"Wait-51da\"\n        }\n      ],\n      \"\
+              Default\": \"VQSRProcessingFailed\"\n    },\n    \"PipelineSucceeded\"\
+              : {\n      \"Type\": \"Succeed\"\n    }\n  }\n}", {alignmentPollerLambdaArn: {
+                'Fn::GetAtt': [AlignmentPollerLambdaFunction, Arn]}, alignmentSubmitLambdaArn: {
+                'Fn::GetAtt': [AlignmentLambdaFunction, Arn]}, genoPollerLambdaArn: {
+                'Fn::GetAtt': [AlignmentPollerLambdaFunction, Arn]}, genoSubmitLambdaArn: {
+                'Fn::GetAtt': [GenoLambdaFunction, Arn]}, haploPollerLambdaArn: {
+                'Fn::GetAtt': [AlignmentPollerLambdaFunction, Arn]}, haploSubmitLambdaArn: {
+                'Fn::GetAtt': [HaploLambdaFunction, Arn]}, vqsrPollerLambdaArn: {
+                'Fn::GetAtt': [AlignmentPollerLambdaFunction, Arn]}, vqsrSubmitLambdaArn: {
+                'Fn::GetAtt': [VQSRLambdaFunction, Arn]}}]}, RoleArn: {'Fn::GetAtt': [
+            StatesExecutionRole, Arn]}}, Type: 'AWS::StepFunctions::StateMachine'},
+    Route: {DependsOn: [RouteTable, InternetGateway], Properties: {DestinationCidrBlock: 0.0.0.0/0,
+        GatewayId: {Ref: InternetGateway}, RouteTableId: {Ref: RouteTable}}, Type: 'AWS::EC2::Route'},
+    RouteTable: {DependsOn: VPC, Properties: {VpcId: {Ref: VPC}}, Type: 'AWS::EC2::RouteTable'},
+    SecurityGroup: {DependsOn: VPC, Properties: {GroupDescription: EC2 Security Group
+          for instances launched in the VPC by Batch, VpcId: {Ref: VPC}}, Type: 'AWS::EC2::SecurityGroup'},
+    StatesExecutionRole: {Properties: {AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole',
+              Effect: Allow, Principal: {Service: [{'Fn::Sub': 'states.${AWS::Region}.amazonaws.com'}]}}],
+          Version: '2012-10-17'}, Path: /, Policies: [{PolicyDocument: {Statement: [
+                {Action: ['lambda:InvokeFunction'], Effect: Allow, Resource: '*'}],
+              Version: '2012-10-17'}, PolicyName: StatesExecutionPolicy}]}, Type: 'AWS::IAM::Role'},
+    StepFunctionsActivitiesInstance: {DependsOn: [BatchScatterGatherSubmissionActivity,
+        BatchScatterGatherPollingActivity, BatchGatherActivity, StepFunctionsActivitiesInstanceProfile,
+        StepFunctionsActivitiesInstanceSecurityGroup, Subnet], Metadata: {'AWS::CloudFormation::Authentication': {
+          S3AccessCreds: {roleName: {Ref: StepFunctionsActivitiesInstanceRole}, type: S3}},
+        'AWS::CloudFormation::Init': {configSets: {garden_worker_bootstrap: [install_ansible,
+              download_ansible_bootstrap, run_ansible_bootstrap]}, download_ansible_bootstrap: {
+            files: {/home/ec2-user/.rkstr8/activities.arns.yaml: {content: {'Fn::Join': [
+                    '', ['---
+
+                        ', 'scatter_gather_submission_arn: ${BatchScatterGatherSubmissionActivity}
+
+                        ', 'scatter_gather_polling_arn: ${BatchScatterGatherPollingActivity}
+
+                        ', 'gather_arn: ${BatchGatherActivity}
+
+                        ']]}, group: ec2-user, mode: '000644', owner: ec2-user}, /home/ec2-user/.rkstr8/activities_and_handoff.bootstrap.yaml: {
+                authentication: S3AccessCreds, group: ec2-user, mode: '000644', owner: ec2-user,
+                source: {'Fn::Join': [/, ['http://s3.amazonaws.com', {Ref: ActivityAndHandoffAnsibleBucketName},
+                      {Ref: ActivityAndHandoffAnsibleKeyName}]]}}, /home/ec2-user/.rkstr8/activities_daemon.py: {
+                authentication: S3AccessCreds, group: ec2-user, mode: '000644', owner: ec2-user,
+                source: {'Fn::Join': [/, ['http://s3.amazonaws.com', {Ref: ActivityAndHandoffDaemonBucketName},
+                      {Ref: ActivityAndHandoffDaemonKeyName}]]}}, /home/ec2-user/.rkstr8/activities_daemon.requirements.txt: {
+                authentication: S3AccessCreds, group: ec2-user, mode: '000644', owner: ec2-user,
+                source: {'Fn::Join': [/, ['http://s3.amazonaws.com', {Ref: ActivityAndHandoffDaemonRequirementsBucketName},
+                      {Ref: ActivityAndHandoffDaemonRequirementsKeyName}]]}}, /home/ec2-user/.rkstr8/rkstr8.pkg.zip: {
+                authentication: S3AccessCreds, group: ec2-user, mode: '000644', owner: ec2-user,
+                source: {'Fn::Join': [/, ['http://s3.amazonaws.com', {Ref: Rkstr8PkgBucketName},
+                      {Ref: Rkstr8PkgKeyName}]]}}}}, install_ansible: {commands: {
+              00_update_yum: {command: {'Fn::Join': [' ', [yum, update, -y]]}, cwd: /home/ec2-user/,
+                ignoreErrors: 'false'}, 01_group_install_devtools: {command: {'Fn::Join': [
+                    ' ', [yum, -y, groupinstall, '"Development Tools"']]}, cwd: /home/ec2-user/,
+                ignoreErrors: 'false'}, 02_pip_upgrade_pip: {command: {'Fn::Join': [
+                    ' ', [pip, install, --upgrade, pip]]}, cwd: /home/ec2-user/, ignoreErrors: 'false'},
+              03_install_cloudwatch_logs_agent: {command: {'Fn::Join': [' ', [yum,
+                      install, -y, awslogs]]}, cwd: /home/ec2-user/, ignoreErrors: 'false'},
+              03_pip_install_ansible: {command: {'Fn::Join': [' ', [/usr/bin/pip,
+                      install, ansible]]}, cwd: /home/ec2-user/, ignoreErrors: 'false'}}},
+          run_ansible_bootstrap: {commands: {01_run_ansible_bootstrap: {command: {
+                  'Fn::Join': [' ', [/usr/local/bin/ansible-playbook, /home/ec2-user/.rkstr8/activities_and_handoff.bootstrap.yaml,
+                      --connection=local]]}, cwd: /usr/local/bin/, ignoreErrors: 'false'}}}}},
+      Properties: {AvailabilityZone: {Ref: GPCESubnetAZ1}, BlockDeviceMappings: [
+          {DeviceName: /dev/xvda, Ebs: {VolumeSize: 200, VolumeType: gp2}}], IamInstanceProfile: {
+          Ref: StepFunctionsActivitiesInstanceProfile}, ImageId: ami-55ef662f, InstanceType: m4.xlarge,
+        KeyName: {Ref: GPCESSHKeyPair}, SecurityGroupIds: [{'Fn::GetAtt': [StepFunctionsActivitiesInstanceSecurityGroup,
+              GroupId]}], SubnetId: {Ref: Subnet}, Tags: [{Key: Name, Value: PipelineActivities}],
+        UserData: {'Fn::Base64': {'Fn::Join': ['', ['#!/bin/bash -xe
+
+                  ', '/opt/aws/bin/cfn-init -v ', '         --stack ', {Ref: 'AWS::StackName'},
+                '         --resource StepFunctionsActivitiesInstance ', '         --configsets
+                  garden_worker_bootstrap ', '         --region ', {Ref: 'AWS::Region'},
+                '
+
+                  ', '/opt/aws/bin/cfn-signal -e $? ', '         --stack ', {Ref: 'AWS::StackName'},
+                '         --resource StepFunctionsActivitiesInstance ', '         --region ',
+                {Ref: 'AWS::Region'}, '
+
+                  ']]}}}, Type: 'AWS::EC2::Instance'}, StepFunctionsActivitiesInstanceProfile: {
+      DependsOn: StepFunctionsActivitiesInstanceRole, Properties: {Path: /, Roles: [
+          {Ref: StepFunctionsActivitiesInstanceRole}]}, Type: 'AWS::IAM::InstanceProfile'},
+    StepFunctionsActivitiesInstanceRole: {Properties: {AssumeRolePolicyDocument: {
+          Statement: [{Action: ['sts:AssumeRole'], Effect: Allow, Principal: {Service: [
+                  ec2.amazonaws.com]}}]}, ManagedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM'],
+        Path: /, Policies: [{PolicyDocument: {Statement: [{Action: ['logs:*'], Effect: Allow,
+                  Resource: 'arn:aws:logs:*:*:*'}], Version: '2012-10-17'}, PolicyName: CanLog},
+          {PolicyDocument: {Statement: [{Action: ['states:DescribeActivity', 'states:DeleteActivity',
+                    'states:GetActivityTask', 'states:SendTaskSuccess', 'states:SendTaskFailure',
+                    'states:SendTaskHeartbeat'], Effect: Allow, Resource: [{Ref: BatchScatterGatherSubmissionActivity},
+                    {Ref: BatchScatterGatherPollingActivity}, {Ref: BatchGatherActivity}]}],
+              Version: '2012-10-17'}, PolicyName: CanCallStepfunctions}, {PolicyDocument: {
+              Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}], Version: '2012-10-17'},
+            PolicyName: CanCallBatch}, {PolicyDocument: {Statement: [{Action: ['s3:*'],
+                  Effect: Allow, Resource: ['*', 'arn:aws:s3:::/*']}], Version: '2012-10-17'},
+            PolicyName: CanCallS3}]}, Type: 'AWS::IAM::Role'}, StepFunctionsActivitiesInstanceSecurityGroup: {
+      Properties: {GroupDescription: Allow http to client host, SecurityGroupIngress: [
+          {CidrIp: 128.218.0.0/16, FromPort: '22', IpProtocol: tcp, ToPort: '22'}],
+        VpcId: {Ref: VPC}}, Type: 'AWS::EC2::SecurityGroup'}, StepFunctionsActivitiesS3Download: {
+      DependsOn: StepFunctionsActivitiesInstanceRole, Properties: {PolicyDocument: {
+          Statement: [{Action: ['s3:GetObject'], Effect: Allow, Resource: 'arn:aws:s3:::/*'}]},
+        PolicyName: S3EdenDownload, Roles: [{Ref: StepFunctionsActivitiesInstanceRole}]},
+      Type: 'AWS::IAM::Policy'}, Subnet: {DependsOn: [VPC], Properties: {AvailabilityZone: {
+          Ref: GPCESubnetAZ1}, CidrBlock: 10.0.0.0/24, MapPublicIpOnLaunch: 'True',
+        VpcId: {Ref: VPC}}, Type: 'AWS::EC2::Subnet'}, SubnetRouteTableAssociation: {
+      DependsOn: [RouteTable, Subnet], Properties: {RouteTableId: {Ref: RouteTable},
+        SubnetId: {Ref: Subnet}}, Type: 'AWS::EC2::SubnetRouteTableAssociation'},
+    TriodenovoLambdaExecutionRole: {Properties: {AssumeRolePolicyDocument: {Statement: [
+            {Action: 'sts:AssumeRole', Effect: Allow, Principal: {Service: lambda.amazonaws.com}}],
+          Version: '2012-10-17'}, Policies: [{PolicyDocument: {Statement: [{Action: [
+                    's3:GetBucketLocation', 's3:ListAllMyBuckets'], Effect: Allow,
+                  Resource: 'arn:aws:s3:::*'}], Version: '2012-10-17'}, PolicyName: CanListBuckets},
+          {PolicyDocument: {Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}],
+              Version: '2012-10-17'}, PolicyName: CanCallBatch}, {PolicyDocument: {
+              Statement: [{Action: ['logs:*'], Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}],
+              Version: '2012-10-17'}, PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'},
+    TriodenovoLambdaFunction: {Properties: {Code: {S3Bucket: {Ref: TriodenovoLambdaFuncS3BucketName},
+          S3Key: {Ref: TriodenovoLambdaFuncS3KeyName}}, Handler: {'Fn::Join': [.,
+            [{Ref: TriodenovoLambdaFuncModuleName}, handler]]}, Role: {'Fn::GetAtt': [
+            TriodenovoLambdaExecutionRole, Arn]}, Runtime: python3.6, Timeout: '300'},
+      Type: 'AWS::Lambda::Function'}, VPC: {Properties: {CidrBlock: 10.0.0.0/16},
+      Type: 'AWS::EC2::VPC'}, VPCGatewayAttachment: {DependsOn: [VPC, InternetGateway],
+      Properties: {InternetGatewayId: {Ref: InternetGateway}, VpcId: {Ref: VPC}},
+      Type: 'AWS::EC2::VPCGatewayAttachment'}, VQSRLambdaExecutionRole: {Properties: {
+        AssumeRolePolicyDocument: {Statement: [{Action: 'sts:AssumeRole', Effect: Allow,
+              Principal: {Service: lambda.amazonaws.com}}], Version: '2012-10-17'},
+        Policies: [{PolicyDocument: {Statement: [{Action: ['s3:GetBucketLocation',
+                    's3:ListAllMyBuckets'], Effect: Allow, Resource: 'arn:aws:s3:::*'}],
+              Version: '2012-10-17'}, PolicyName: CanListBuckets}, {PolicyDocument: {
+              Statement: [{Action: ['batch:*'], Effect: Allow, Resource: '*'}], Version: '2012-10-17'},
+            PolicyName: CanCallBatch}, {PolicyDocument: {Statement: [{Action: ['logs:*'],
+                  Effect: Allow, Resource: 'arn:aws:logs:*:*:*'}], Version: '2012-10-17'},
+            PolicyName: CanLog}]}, Type: 'AWS::IAM::Role'}, VQSRLambdaFunction: {
+      Properties: {Code: {S3Bucket: {Ref: VQSRLambdaFuncS3BucketName}, S3Key: {Ref: VQSRLambdaFuncS3KeyName}},
+        Handler: {'Fn::Join': [., [{Ref: VQSRLambdaFuncModuleName}, handler]]}, Role: {
+          'Fn::GetAtt': [VQSRLambdaExecutionRole, Arn]}, Runtime: python3.6, Timeout: '60'},
+      Type: 'AWS::Lambda::Function'}, baserecalJobDef: {DependsOn: [GeneralPurposeContainerRole],
+      Properties: {ContainerProperties: {Command: [bash, /base_recal/base_recal_setup.sh],
+          Image: lindsayliang/base_recal, JobRoleArn: {Ref: GeneralPurposeContainerRole},
+          Memory: 14000, MountPoints: [{ContainerPath: /base_recal/localDir/, ReadOnly: false,
+              SourceVolume: localDir}], Privileged: false, ReadonlyRootFilesystem: false,
+          Ulimits: [{HardLimit: 90000, Name: nofile, SoftLimit: 90000}], Vcpus: 8,
+          Volumes: [{Host: {SourcePath: /mnt/data/}, Name: localDir}]}, JobDefinitionName: base_recalbffeJob,
+        RetryStrategy: {Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'},
+    baserecaltableJobDef: {DependsOn: [GeneralPurposeContainerRole], Properties: {
+        ContainerProperties: {Command: [bash, /base_recal_table/base_recal_table_setup.sh],
+          Image: lindsayliang/base_recal_table, JobRoleArn: {Ref: GeneralPurposeContainerRole},
+          Memory: 14000, MountPoints: [{ContainerPath: /base_recal_table/localDir/,
+              ReadOnly: false, SourceVolume: localDir}], Privileged: false, ReadonlyRootFilesystem: false,
+          Ulimits: [{HardLimit: 90000, Name: nofile, SoftLimit: 90000}], Vcpus: 8,
+          Volumes: [{Host: {SourcePath: /mnt/data/}, Name: localDir}]}, JobDefinitionName: base_recal_table9d16Job,
+        RetryStrategy: {Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'},
+    bwamemJobDef: {DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /bwa_mem/bwa_mem_setup.sh], Image: lindsayliang/bwa_mem,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 30000, MountPoints: [
+            {ContainerPath: /bwa_mem/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 4, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: bwa_memb12dJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, indexbamJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /index_bam/index_bam_setup.sh], Image: lindsayliang/index_bam,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 14000, MountPoints: [
+            {ContainerPath: /index_bam/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 8, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: index_bam6bbdJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, markdupsJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /mark_dups/mark_dups_setup.sh], Image: lindsayliang/mark_dups,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 14000, MountPoints: [
+            {ContainerPath: /mark_dups/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 8, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: mark_dups5ab7Job, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, sentieongenotyperJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /sentieon_genotyper/sentieon_genotyper_setup.sh], Image: lindsayliang/sentieon_genotyper,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 28000, MountPoints: [
+            {ContainerPath: /sentieon_genotyper/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 16, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: sentieon_genotypera19eJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, sentieonhaplotyperJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /sentieon_haplotyper/sentieon_haplotyper_setup.sh], Image: lindsayliang/sentieon_haplotyper,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 30000, MountPoints: [
+            {ContainerPath: /sentieon_haplotyper/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 4, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: sentieon_haplotyper4b6dJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, sortsamJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /sort_sam/sort_sam_setup.sh], Image: lindsayliang/sort_sam,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 14000, MountPoints: [
+            {ContainerPath: /sort_sam/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 8, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: sort_sam578fJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, vqsrindelapplyJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /vqsr_indel_apply/vqsr_indel_apply_setup.sh], Image: lindsayliang/vqsr_indel_apply,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 120000, MountPoints: [
+            {ContainerPath: /vqsr_indel_apply/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 16, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: vqsr_indel_applyfff7Job, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, vqsrindelmodelJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /vqsr_indel_model/vqsr_indel_model_setup.sh], Image: lindsayliang/vqsr_indel_model,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 120000, MountPoints: [
+            {ContainerPath: /vqsr_indel_model/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 16, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: vqsr_indel_model168cJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, vqsrsnpapplyJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /vqsr_snp_apply/vqsr_snp_apply_setup.sh], Image: lindsayliang/vqsr_snp_apply,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 120000, MountPoints: [
+            {ContainerPath: /vqsr_snp_apply/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 16, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: vqsr_snp_apply1108Job, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}, vqsrsnpmodelJobDef: {
+      DependsOn: [GeneralPurposeContainerRole], Properties: {ContainerProperties: {
+          Command: [bash, /vqsr_snp_model/vqsr_snp_model_setup.sh], Image: lindsayliang/vqsr_snp_model,
+          JobRoleArn: {Ref: GeneralPurposeContainerRole}, Memory: 120000, MountPoints: [
+            {ContainerPath: /vqsr_snp_model/localDir/, ReadOnly: false, SourceVolume: localDir}],
+          Privileged: false, ReadonlyRootFilesystem: false, Ulimits: [{HardLimit: 90000,
+              Name: nofile, SoftLimit: 90000}], Vcpus: 16, Volumes: [{Host: {SourcePath: /mnt/data/},
+              Name: localDir}]}, JobDefinitionName: vqsr_snp_model8addJob, RetryStrategy: {
+          Attempts: 2}, Type: container}, Type: 'AWS::Batch::JobDefinition'}}}
