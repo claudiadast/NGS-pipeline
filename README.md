@@ -13,7 +13,7 @@ can be found on readthedocs here: http://ngs-pipeline.readthedocs.io/en/latest/i
 
 Before running the pipeline, you'll to have done the following:
 
-  - [Create an AWS account](#Creating-and-Setting-up-your-Amazon-Web-Services-(AWS)-Account)
+  - [Create an AWS account](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#creating-and-setting-up-your-amazon-web-services-aws-account)
   - [Put reference data in AWS S3 storage](#Download-and-Upload-Reference-Files-to-S3)
   - [Obtain a Sentieon License](#Obtain-a-Sentieon-License-File)
   - [Create a python 3.6 envrionment configured with our project dependencies (we recommend Conda!)](#Install-Conda-and-your-Dev-Environment)
