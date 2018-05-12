@@ -14,10 +14,10 @@ can be found on readthedocs here: http://ngs-pipeline.readthedocs.io/en/latest/i
 Before running the pipeline, you'll to have done the following:
 
   - [Create an AWS account](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#creating-and-setting-up-your-amazon-web-services-aws-account)
-  - [Put reference data in AWS S3 storage](#Download-and-Upload-Reference-Files-to-S3)
-  - [Obtain a Sentieon License](#Obtain-a-Sentieon-License-File)
-  - [Create a python 3.6 envrionment configured with our project dependencies (we recommend Conda!)](#Install-Conda-and-your-Dev-Environment)
-  - [(Optionally) Create Google Cloud Platform account](#Install-Conda-and-your-Dev-Environment)
+  - [Put reference data in AWS S3 storage](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#download-and-upload-reference-files-to-s3)
+  - [Obtain a Sentieon License](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#obtain-a-sentieon-license-file)
+  - [Create a python 3.6 envrionment configured with our project dependencies (we recommend Conda!)](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#install-conda-and-your-dev-environment)
+  - [(Optionally) Create Google Cloud Platform account](https://github.com/sanderslab/NGS-pipeline/blob/master/README.md#creating-a-google-cloud-platform-gcp-account-optional)
 
 If you need to set up any of the above, please see the docs; once you 
 have these in place, you can execute the command at the bottom to run
@@ -90,6 +90,8 @@ You should also see the environment name prepended to your shell promp
 
 # Additional Information
 
+In order to run the pipeline with more than 5 samples, you'll need to increase some 
+of your limits for certain ec2 instance types. 
 By default, the pipeline makes use of the following instance types:
 
   - c5.9xlarge, c5.18xlarge, r4.2xlarge, r4.4xlarge.
