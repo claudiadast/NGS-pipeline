@@ -1,4 +1,4 @@
-# Welcome to the Sanders Lab NGS-pipeline!
+#Welcome to the Sanders Lab NGS-pipeline!
 
 The following NGS pipeline was developed by the UCSF Psychiatry Bioinformatics Core (PsychCore) 
 team to call variants on large cohorts of human sequencing data. The current build can run 
@@ -9,7 +9,7 @@ still being developed.
 What follows is a brief quick-start guide to running the pipeline. Full documentation 
 can be found on readthedocs here: http://ngs-pipeline.readthedocs.io/en/latest/index.html
 
-# Getting Started
+#Getting Started
 
 Before running the pipeline, you'll to have done the following:
 
@@ -23,7 +23,7 @@ If you need to set up any of the above, please see the docs; once you
 have these in place, you can execute the command at the bottom to run
 the pipeline.
 
-## Creating and Setting up your Amazon Web Services (AWS) Account
+##Creating and Setting up your Amazon Web Services (AWS) Account
 
 To create an AWS account, you can follow the instructions at ([AWS](https://aws.amazon.com)). 
 The pipeline's infrastructure is made up of several
@@ -40,7 +40,7 @@ In addition to an **SSH KeyPair**, you will need to set up cloud storage locatio
 In AWS, this storage service is called **S3**. In this service, data is held in containers, called buckets, you will need at least one.
 Additional details on creating buckets can be [found here](https://docs.aws.amazon.com/AmazonS3/latest/user-guide/create-bucket.html).
 
-## Download and Upload Reference Files to S3
+##Download and Upload Reference Files to S3
 
 The pipeline performs many operations which require several reference files. (Eg. the human reference genome fasta and its indexes). These must be uploaded to AWS S3 before the pipeline can be run. The standard
 reference files are provided by the Broad Institute's [GATK Resource
@@ -53,14 +53,14 @@ In order to upload the reference files to AWS S3, you'll need to install
 the AWS Command Line Interface - please see [AWS CLI Installation](https://docs.aws.amazon.com/cli/latest/userguide/installing.html).
 For uploading files onto S3, please see the [AWS S3 documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html).
 
-## Obtain a Sentieon License File
+##Obtain a Sentieon License File
 
 Currently, the pipeline utilises only [Sentieon](https://www.sentieon.com) in its haplotyping
 and joint genotyping steps. Thus, in order to use the pipeline you must
 first contact Sentieon and obtain a license. They also offer a free
 [trial](https://www.sentieon.com/home/free-trial/).
 
-## Install Conda and your Dev Environment
+##Install Conda and your Dev Environment
 
 In order to run the pipeline, you'll need to install [Conda](https://conda.io/miniconda.html).
 
@@ -84,11 +84,11 @@ version (if it is different than your base) :
 
 You should also see the environment name prepended to your shell promp
 
-# Running the Pipeline
+#Running the Pipeline
 
     $ python rkstr8_driver.py -p <pipeline-name> [ -a access_key_id ] [ -s secret_access_key ]
 
-# Additional Information
+#Additional Information
 
 By default, the pipeline makes use of the following instance types:
 
